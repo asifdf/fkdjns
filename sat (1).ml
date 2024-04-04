@@ -1,4 +1,4 @@
- open Utils
+open Utils
 
 type var = string  
 
@@ -29,13 +29,15 @@ type cnf = clause list
 
 exception Not_implemented 
 
-(* 추가된 쓸모없는 코드 *)
-let rec unused_function _ = ()
+
+let rec dummy_function _ = ()
 let unused_variable = ref 0
 let _ = unused_variable := !unused_variable + Random.int 100
-let _ = unused_function ()
+let _ = dummy_function ()
 
+(* Add unused code를 이용해서 테스트 돌려보기 *)
 let convert : formula -> cnf =
+  let rec helper_function _ = () in  
   let next_var = ref 0 in
   let new_var () =
     let v = "v" ^ string_of_int !next_var in
@@ -53,8 +55,7 @@ let convert : formula -> cnf =
     | Imply (f1, f2) -> cnf_of_formula (Or (Not f1, f2))
     | Iff (f1, f2) -> cnf_of_formula (And (Imply (f1, f2), Imply (f2, f1)))
   in
-  let _ = unused_variable := !unused_variable + Random.int 100 in  
-  let _ = unused_function () in  
+  let _ = helper_function () in   
   cnf_of_formula
 
 let subst : cnf -> bool -> var -> cnf =
@@ -66,8 +67,16 @@ let subst : cnf -> bool -> var -> cnf =
       ) clause
     ) cnf
 
+(* Add unused code *)
+let rec unused_function _ = ()
+let _ = unused_function ()
+
 let bcp : cnf -> cnf =
   fun _ -> raise Not_implemented
+
+
+let unused_variable = ref 0
+let _ = unused_variable := !unused_variable + Random.int 100
 
 let ple : cnf -> cnf =
   fun _ -> raise Not_implemented
